@@ -14,6 +14,7 @@ import (
 	"strconv"
 	"strings"
 
+	v2 "github.com/DataDog/dd-trace-go/v2/ddtrace/tracer"
 	"gopkg.in/DataDog/dd-trace-go.v1/ddtrace"
 	"gopkg.in/DataDog/dd-trace-go.v1/ddtrace/ext"
 	"gopkg.in/DataDog/dd-trace-go.v1/ddtrace/tracer"
@@ -51,7 +52,7 @@ func StartRequestSpan(r *http.Request, opts ...ddtrace.StartSpanOption) (tracer.
 				cfg.Tags["http.host"] = r.Host
 			}
 			if spanctx, err := tracer.Extract(tracer.HTTPHeadersCarrier(r.Header)); err == nil {
-				cfg.Parent = spanctx
+				cfg.Parent = v2.FromGenericCtx(&internal.SpanContextV1Adapter{Ctx: spanctx})
 			}
 			for k, v := range ipTags {
 				cfg.Tags[k] = v

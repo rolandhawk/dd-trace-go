@@ -12,8 +12,8 @@ import (
 	"testing"
 	"time"
 
+	v2 "github.com/DataDog/dd-trace-go/v2/ddtrace/tracer"
 	"gopkg.in/DataDog/dd-trace-go.v1/ddtrace"
-	"gopkg.in/DataDog/dd-trace-go.v1/ddtrace/internal"
 	"gopkg.in/DataDog/dd-trace-go.v1/ddtrace/tracer"
 	"gopkg.in/DataDog/dd-trace-go.v1/internal/log"
 	"gopkg.in/DataDog/dd-trace-go.v1/internal/telemetry"
@@ -30,7 +30,7 @@ func TestGetTracer(t *testing.T) {
 	assert := assert.New(t)
 	tp := NewTracerProvider()
 	tr := tp.Tracer("ot")
-	dd := internal.GetGlobalTracer()
+	dd := v2.GetGlobalTracer()
 	ott, ok := tr.(*oteltracer)
 	assert.True(ok)
 	assert.Equal(ott.DD, dd)

@@ -10,6 +10,7 @@ import (
 	"encoding/binary"
 	"encoding/hex"
 
+	v2 "github.com/DataDog/dd-trace-go/v2/ddtrace/tracer"
 	"gopkg.in/DataDog/dd-trace-go.v1/ddtrace"
 	"gopkg.in/DataDog/dd-trace-go.v1/ddtrace/ext"
 	"gopkg.in/DataDog/dd-trace-go.v1/ddtrace/tracer"
@@ -26,13 +27,13 @@ var telemetryTags = []string{"integration_name:otel"}
 type oteltracer struct {
 	noop.Tracer // https://pkg.go.dev/go.opentelemetry.io/otel/trace#hdr-API_Implementations
 	provider    *TracerProvider
-	DD          ddtrace.Tracer
+	DD          v2.Tracer
 }
 
 func (t *oteltracer) Start(ctx context.Context, spanName string, opts ...oteltrace.SpanStartOption) (context.Context, oteltrace.Span) {
 	var ssConfig = oteltrace.NewSpanStartConfig(opts...)
 	// OTel name is akin to resource name in Datadog
-	var ddopts = []ddtrace.StartSpanOption{tracer.ResourceName(spanName)}
+	var ddopts = []v2.StartSpanOption{v2.ResourceName(spanName)}
 	if !ssConfig.NewRoot() {
 		if s, ok := tracer.SpanFromContext(ctx); ok {
 			// if the span originates from the Datadog tracer,
@@ -51,7 +52,7 @@ func (t *oteltracer) Start(ctx context.Context, spanName string, opts ...oteltra
 		ddopts = append(ddopts, tracer.Tag(ext.SpanKind, k.String()))
 	}
 	telemetry.GlobalClient.Count(telemetry.NamespaceTracers, "spans_created", 1.0, telemetryTags, true)
-	var cfg ddtrace.StartSpanConfig
+	var cfg v2.StartSpanConfig
 	cfg.Tags = make(map[string]interface{})
 	for _, attr := range ssConfig.Attributes() {
 		cfg.Tags[string(attr.Key)] = attr.Value.AsInterface()

@@ -9,9 +9,10 @@ import (
 	"context"
 	"testing"
 
-	"gopkg.in/DataDog/dd-trace-go.v1/ddtrace"
+	v2 "github.com/DataDog/dd-trace-go/v2/ddtrace/tracer"
 	"gopkg.in/DataDog/dd-trace-go.v1/ddtrace/internal"
 	"gopkg.in/DataDog/dd-trace-go.v1/ddtrace/tracer"
+	v2internal "gopkg.in/DataDog/dd-trace-go.v1/internal"
 	"gopkg.in/DataDog/dd-trace-go.v1/internal/telemetry"
 	"gopkg.in/DataDog/dd-trace-go.v1/internal/telemetry/telemetrytest"
 
@@ -22,11 +23,12 @@ import (
 func TestStart(t *testing.T) {
 	assert := assert.New(t)
 	ot := New()
-	dd, ok := internal.GetGlobalTracer().(ddtrace.Tracer)
-	assert.True(ok)
+	dd := v2.GetGlobalTracer()
+	assert.NotNil(dd)
 	ott, ok := ot.(*opentracer)
 	assert.True(ok)
-	assert.Equal(ott.Tracer, dd)
+	ett, ok := ott.Tracer.(*v2internal.TracerV2Adapter)
+	assert.Equal(ett.Tracer, dd)
 }
 
 func TestSpanWithContext(t *testing.T) {

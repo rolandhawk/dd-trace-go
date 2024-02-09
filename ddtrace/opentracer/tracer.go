@@ -27,9 +27,10 @@ package opentracer
 import (
 	"context"
 
+	v2 "github.com/DataDog/dd-trace-go/v2/ddtrace/tracer"
 	"gopkg.in/DataDog/dd-trace-go.v1/ddtrace"
-	"gopkg.in/DataDog/dd-trace-go.v1/ddtrace/internal"
 	"gopkg.in/DataDog/dd-trace-go.v1/ddtrace/tracer"
+	"gopkg.in/DataDog/dd-trace-go.v1/internal"
 	"gopkg.in/DataDog/dd-trace-go.v1/internal/telemetry"
 
 	opentracing "github.com/opentracing/opentracing-go"
@@ -39,7 +40,11 @@ import (
 // Datadog tracer using the provided set of options.
 func New(opts ...tracer.StartOption) opentracing.Tracer {
 	tracer.Start(opts...)
-	return &opentracer{internal.GetGlobalTracer()}
+	return &opentracer{
+		&internal.TracerV2Adapter{
+			Tracer: v2.GetGlobalTracer(),
+		},
+	}
 }
 
 var _ opentracing.Tracer = (*opentracer)(nil)

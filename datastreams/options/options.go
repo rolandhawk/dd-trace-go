@@ -5,6 +5,6 @@
 
 package options
 
-type CheckpointParams struct {
-	PayloadSize int64
-}
+import "github.com/DataDog/dd-trace-go/v2/datastreams/options"
+
+type CheckpointParams = options.CheckpointParams
