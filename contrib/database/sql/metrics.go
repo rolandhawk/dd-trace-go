@@ -43,7 +43,7 @@ func pollDBStats(statsd internal.StatsdClient, db *sql.DB) {
 		statsd.Gauge(InUse, float64(stat.InUse), []string{}, 1)
 		statsd.Gauge(Idle, float64(stat.Idle), []string{}, 1)
 		statsd.Gauge(WaitCount, float64(stat.WaitCount), []string{}, 1)
-		statsd.Timing(WaitDuration, stat.WaitDuration, []string{}, 1)
+		statsd.Gauge(WaitDuration, stat.WaitDuration.Seconds(), []string{}, 1)
 		statsd.Gauge(MaxIdleClosed, float64(stat.MaxIdleClosed), []string{}, 1)
 		statsd.Gauge(MaxIdleTimeClosed, float64(stat.MaxIdleTimeClosed), []string{}, 1)
 		statsd.Gauge(MaxLifetimeClosed, float64(stat.MaxLifetimeClosed), []string{}, 1)
